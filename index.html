@@ -45,7 +45,7 @@
         <p style="margin-top: 20px;">سياسة الاختبار تمنع الإعادة من نفس الجهاز لضمان نزاهة النتائج.</p>
     </div>
 
-    <div id="start-page" style="text-align: center;">
+   <div id="start-page" style="text-align: center;">
         <input type="text" id="studentName" placeholder="الاسم الثلاثي">
         <select id="stageSelect" onchange="updateClasses()">
             <option value="">-- المرحلة الدراسية --</option>
@@ -53,7 +53,7 @@
             <option value="ثاني ثانوي">ثاني ثانوي</option>
             <option value="ثالث ثانوي">ثالث ثانوي</option>
         </select>
-      <select id="studentClass"></select>
+        <select id="studentClass" class="hidden"></select>
         <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار الآن 🚀</button>
         <p id="checking" class="hidden">جاري التحقق من هوية الجهاز...</p>
     </div>
