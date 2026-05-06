@@ -3,83 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي القدرات اللفظي - أ/ عبدالعزيز الفيفي</title>
+    <title>اختبار القدرات - نموذج (6)</title>
+    <!-- مكتبات Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root { --maroon: #800000; --gold: #d4af37; --bg: #fdfaf1; --white: #ffffff; --correct: #2e7d32; --wrong: #c62828; --matte-red: #B22222; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; user-select: none; }
-        .quiz-card { background: var(--white); width: 100%; max-width: 900px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid var(--maroon); padding: 30px; position: relative; }
-        .header { text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
-        .header h3, .header h4 { color: var(--matte-red); margin: 5px 0; }
-        input, select { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
-        .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #f4f4f4; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; }
-        .q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 25px; line-height: 1.8; color: #222; }
-        .reading-box { background: #fff9e6; border: 1.5px solid #f0e68c; padding: 20px; border-radius: 12px; margin-bottom: 20px; line-height: 1.8; font-size: 1.1rem; text-align: justify; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .opt { padding: 18px; border: 2px solid #ececec; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.2rem; background: #fff; font-weight: 600; }
-        .opt:hover { border-color: var(--gold); background: #fffcf0; }
-        .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
-        .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
-        .btn { background: var(--maroon); color: var(--gold); padding: 14px 50px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
-        .hidden { display: none !important; }
-        #lock-screen { text-align: center; padding: 40px 20px; border: 2px dashed var(--wrong); border-radius: 15px; background: #fff5f5; }
+        :root { --maroon: #800000; --gold: #d4af37; --bg: #fdfaf1; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .quiz-container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 8px solid var(--maroon); }
+        .header { text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 25px; padding-bottom: 10px; }
+        .question-card { margin-bottom: 20px; display: none; }
+        .question-card.active { display: block; }
+        .option { display: block; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .option:hover { background: #f0f0f0; }
+        .option.selected { background: var(--maroon); color: white; border-color: var(--maroon); }
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-next { background: var(--maroon); color: white; }
+        .btn-prev { background: #666; color: white; }
+        #login-section { text-align: center; padding: 50px 20px; }
+        input { padding: 12px; width: 80%; max-width: 300px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; text-align: center; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<div class="quiz-card">
-    <div class="header">
-        <h3>أ / عبدالعزيز الفيفي ✨</h3>
-        <h4>ثانوية الأمير عبدالمجيد 🎓</h4>
-        <h2>محاكي القدرات اللفظي - نموذج (11)</h2>
+<div class="quiz-container">
+    <!-- قسم تسجيل الدخول والتحقق -->
+    <div id="login-section">
+        <h2 style="color: var(--maroon);">أهلاً بك في نموذج (6)</h2>
+        <p>يرجى إدخال البريد الإلكتروني المسجل للمتابعة</p>
+        <input type="email" id="studentEmail" placeholder="sxxxxxxx@rb.moe.gov.sa"><br>
+        <button class="btn-next" onclick="checkAccess()">دخول الاختبار</button>
     </div>
 
-    <div id="lock-screen" class="hidden">
-        <h1 style="font-size: 3rem; margin: 0;">🚫</h1>
-        <h2 style="color: var(--wrong);">محاولة تكرار الاختبار!</h2>
-        <div id="duplicate-info" style="font-size: 1.2rem; line-height: 2; color: #444;">
-            <p>عذراً، هذا الجهاز مسجل بنتيجة سابقة:</p>
-            <p id="prev-student-details" style="font-weight: bold; background: #ffebeb; padding: 15px; border-radius: 8px; border: 1px solid var(--wrong);"></p>
+    <!-- قسم الاختبار -->
+    <div id="quiz-section" style="display: none;">
+        <div class="header">
+            <h3 id="student-name-display"></h3>
+            <div id="progress">سؤال 1 من 0</div>
         </div>
-        <p style="margin-top: 20px;">سياسة الاختبار تمنع الإعادة من نفس الجهاز لضمان نزاهة النتائج.</p>
-    </div>
-
-   <div id="start-page" style="text-align: center;">
-        <input type="text" id="studentName" placeholder="الاسم الثلاثي">
-        <select id="stageSelect" onchange="updateClasses()">
-            <option value="">-- المرحلة الدراسية --</option>
-            <option value="أول ثانوي">أول ثانوي</option>
-            <option value="ثاني ثانوي">ثاني ثانوي</option>
-            <option value="ثالث ثانوي">ثالث ثانوي</option>
-        </select>
-        <select id="studentClass" class="hidden"></select>
-        <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار الآن 🚀</button>
-        <p id="checking" class="hidden">جاري التحقق من هوية الجهاز...</p>
-    </div>
-
-    <div id="quiz-page" class="hidden">
-        <div class="nav-bar">
-            <div id="q-counter" style="font-weight: bold;"></div>
-            <div id="timer" style="font-weight: 900; color: var(--maroon); font-size: 1.4rem;">45</div>
+        <div id="questions-area"></div>
+        <div class="nav-btns">
+            <button class="btn-prev" onclick="prevQuestion()">السابق</button>
+            <button class="btn-next" id="nextBtn" onclick="nextQuestion()">التالي</button>
         </div>
-        <div id="reading-container" class="reading-box hidden"></div>
-        <div id="question-text" class="q-text"></div>
-        <div id="options-area" class="options-grid"></div>
-        <div style="text-align: center; margin-top: 25px;">
-            <button id="next-btn" class="btn hidden" onclick="nextQuestion()">السؤال التالي ⮕</button>
-        </div>
-    </div>
-
-    <div id="result-page" class="hidden" style="text-align: center;">
-        <h2 style="color: var(--maroon);">تم الانتهاء! نتيجتك هي:</h2>
-        <div style="font-size: 4rem; font-weight: bold; margin: 20px 0; color: var(--gold);" id="score-text"></div>
-        <p>✨ أ / عبد العزيز الفيفي - ثانوية الأمير عبدالمجيد 🎓</p>
     </div>
 </div>
 
 <script>
-    const currentModelId = "model_11"; 
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyBkCO7FDQXd89YDf843J4_AtvEFvzzt-R0",
         authDomain: "aztlg-494c3.firebaseapp.com",
@@ -91,178 +63,139 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function updateClasses() {
-        const stage = document.getElementById('stageSelect').value;
-        const classSelect = document.getElementById('studentClass');
-        classSelect.innerHTML = '<option value="">-- اختر الفصل --</option>';
-        if (stage) {
-            classSelect.classList.remove('hidden');
-            for (let i = 1; i <= 6; i++) {
-                const opt = document.createElement('option');
-                opt.value = `${stage} - ${i}`;
-                opt.innerText = `فصل ${i}`;
-                classSelect.appendChild(opt);
+    // مصفوفة الأسئلة - قم بتعبئتها ببيانات نموذج 6
+    const questions = [
+        { q: "رئة : تنفس", options: ["قلب : ضخ", "معدة : هضم", "عين : إبصار", "أذن : سمع"], correct: 2, type: "tan" },
+        { q: "الجاهل يؤكد، والعالم يشك، والعاقل ........", options: ["يتروى", "يندم", "يصمت", "يصرخ"], correct: 0, type: "ekm" },
+        // أضف بقية الـ 99 سؤالاً هنا مع تحديد النوع (tan, ekm, syq, st, mfr, art, ikh)
+    ];
+
+    let currentIdx = 0;
+    let userAnswers = {};
+    let studentData = null;
+
+    // التحقق من وجود الطالب في قائمة الـ 181
+    async function checkAccess() {
+        const email = document.getElementById('studentEmail').value.trim().toLowerCase();
+        if(!email) return alert("أدخل الإيميل");
+
+        try {
+            const doc = await db.collection("allowed_students").doc(email).get();
+            if (doc.exists) {
+                studentData = doc.data();
+                studentData.email = email;
+                startQuiz();
+            } else {
+                alert("عذراً، هذا الإيميل غير مسجل في القائمة المعتمدة.");
             }
+        } catch (e) { alert("خطأ في الاتصال بقاعدة البيانات"); }
+    }
+
+    function startQuiz() {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        document.getElementById('student-name-display').innerText = "المتسابق: " + studentData.name;
+        renderQuestions();
+        showQuestion(0);
+    }
+
+    function renderQuestions() {
+        const area = document.getElementById('questions-area');
+        document.getElementById('progress').innerText = `سؤال 1 من ${questions.length}`;
+        
+        questions.forEach((item, index) => {
+            let optionsHtml = item.options.map((opt, i) => 
+                `<div class="option" onclick="selectOption(${index}, ${i}, this)">${opt}</div>`
+            ).join('');
+            
+            area.innerHTML += `
+                <div class="question-card" id="q-card-${index}">
+                    <h4>${index + 1}. ${item.q}</h4>
+                    ${optionsHtml}
+                </div>`;
+        });
+    }
+
+    function selectOption(qIdx, optIdx, el) {
+        userAnswers[qIdx] = optIdx;
+        const siblings = el.parentElement.querySelectorAll('.option');
+        siblings.forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function showQuestion(index) {
+        document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(`q-card-${index}`).classList.add('active');
+        document.getElementById('progress').innerText = `سؤال ${index + 1} من ${questions.length}`;
+        
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.innerText = (index === questions.length - 1) ? "إنهاء الاختبار" : "التالي";
+    }
+
+    function nextQuestion() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            showQuestion(currentIdx);
+        } else {
+            submitResults();
         }
     }
 
-    function generateAdvancedFingerprint() {
-        const screenSpecs = window.screen.width + "x" + window.screen.height + "-" + window.screen.colorDepth;
-        const hardwareSpecs = navigator.hardwareConcurrency + "-" + (navigator.deviceMemory || "unknown");
-        const platform = navigator.platform;
-        return btoa(screenSpecs + hardwareSpecs + platform).substring(0, 50);
-    }
-    const deviceID = generateAdvancedFingerprint();
-
-const quizData = [
-    // --- 1. التناظر اللفظي ---
-    { cat: "التناظر اللفظي", q: "إهمال : فشل", opts: ["حادث : سرعة", "سير : وصول", "شحن : بطارية", "تعب : جهد"], ans: "سير : وصول" },
-    { cat: "التناظر اللفظي", q: "قلم : حبر", opts: ["سيارة : بنزين", "كتاب : ورق", "شجرة : أوراق", "كاميرا : شاشة"], ans: "سيارة : بنزين" },
-    { cat: "التناظر اللفظي", q: "قمح : ذرة", opts: ["صحراء : رمل", "بركان : نار", "تين : مشمش", "نور : ظلام"], ans: "تين : مشمش" },
-    { cat: "التناظر اللفظي", q: "قلم : صرير", opts: ["مدرسة : جرس", "طنين : بعوض", "أزيز : طائرة", "ناقة : رغاء"], ans: "ناقة : رغاء" },
-    { cat: "التناظر اللفظي", q: "قلم : كاتب", opts: ["طبيب : مريض", "سيف : مقاتل", "جراح : مشرط", "طعام : قدر"], ans: "سيف : مقاتل" },
-    { cat: "التناظر اللفظي", q: "قلم : كتابة", opts: ["تعليم : معلم", "رسام : رسم", "حصاد : حصادة", "تحذير : محذر"], ans: "رسام : رسم" },
-    { cat: "التناظر اللفظي", q: "قطر : الجزائر", opts: ["الكويت : تونس", "السودان : تركيا", "الإمارات : البرازيل", "أمريكا : الأردن"], ans: "الكويت : تونس" },
-    { cat: "التناظر اللفظي", q: "شطط : غلو", opts: ["تشدد : تطرف", "اعتدال : تنطع", "زهيد : باهظ", "علم : حلم"], ans: "تشدد : تطرف" },
-    { cat: "التناظر اللفظي", q: "قوي : متين", opts: ["زهيد : رخيص", "نتيجة : سبب", "حب : امتلاك", "إيمان : جنة"], ans: "زهيد : رخيص" },
-    { cat: "التناظر اللفظي", q: "ليل : ظلام", opts: ["سفر : تعب", "اختبار : رسوب", "فقر : عوز", "ضوء : نهار"], ans: "سفر : تعب" },
-
-    // --- 2. إكمال الجمل ---
-    { cat: "إكمال الجمل", q: "تكثف وزارة الصحة جهودها الإعلامية ...... الناس من خطر إهمال بعض الأمراض المزمنة.", opts: ["التحذير", "لإبعاد", "الشفاء", "المعالجة"], ans: "التحذير" },
-    { cat: "إكمال الجمل", q: "الطلاب ....... المنهج في البداية ويعتمدون على المذاكرة في .......... الأخيرة.", opts: ["يهملون - الأسابيع", "يفهمون – الأيام", "يحفظون - الساعات", "يتركون - الأشهر"], ans: "يهملون - الأسابيع" },
-    { cat: "إكمال الجمل", q: "الطلاب يتنافسون على ........ لأجل الحصول على ........ الوظيفية.", opts: ["الدرجات - الفرص", "الجهل - الراحة", "العلم – الدرجات", "التعلم – المراكز"], ans: "الدرجات - الفرص" },
-    { cat: "إكمال الجمل", q: "الطلاقة ........ ملكة تعين الإنسان على حسن ....... والإقناع.", opts: ["اللفظية - التعبير", "الشعرية - التوازي", "الفكرية - الاستماع", "الحسية - الاستنطاق"], ans: "اللفظية - التعبير" },
-    { cat: "إكمال الجمل", q: "الكرماء يسعون في ........ ويتجنبون ........ .", opts: ["الفضائل - الرذائل", "المحاسن - المكاره", "الخير - الرياء", "الأرض - الإيذاء"], ans: "الفضائل - الرذائل" },
-    { cat: "إكمال الجمل", q: "الكلمات الرقيقة لا تشبع .......... الجائعة، بل تحتاج إلى الطعام.", opts: ["البطون", "الأفئدة", "المعدة", "النفوس"], ans: "البطون" },
-    { cat: "إكمال الجمل", q: "القلب ....... الجسم إذا أصلحته صلح .......... الجسد.", opts: ["أساس - كل", "عمود - سائر", "ركيزة - نصف", "زينة - بعض"], ans: "أساس - كل" },
-    { cat: "إكمال الجمل", q: "البعض لا ....... منه إلا الفضائل، والبعض يكفيك منه ألا ....... بالرذائل.", opts: ["تنتظر - يؤذيك", "ترجو - يجود", "تنتقد - يأتي", "تخشى - يصيبك"], ans: "تنتظر - يؤذيك" },
-    { cat: "إكمال الجمل", q: "لا يكون من ينصحك ........ ولكنه قد يعطيك شيئاً ........ .", opts: ["كاملاً - ينقصك", "متكبراً - ينفعك", "رحيما - يتممك", "ناقصا - يضرك"], ans: "كاملاً - ينقصك" },
-    { cat: "إكمال الجمل", q: "بعض الناس لديهم ....... عن السؤال حتى عند شدة الحاجة، فكن لماحاً.", opts: ["الحياء", "الجرأة", "الضعف", "الخوف"], ans: "الحياء" },
-
-    // --- 3. الخطأ السياقي ---
-    { cat: "الخطأ السياقي", q: "أسوأ الناس من إذا هجوته سكت وإذا مدحته خجل.", opts: ["أسوأ", "هجوته", "سكت", "خجل"], ans: "أسوأ" },
-    { cat: "الخطأ السياقي", q: "لا تجعل الغضب مانعا للانتقام.", opts: ["تجعل", "الغضب", "مانعا", "للانتقام"], ans: "للانتقام" },
-
-    // --- 4. المفردة الشاذة ---
-    { cat: "المفردة الشاذة", q: "اختر المفردة الشاذة فيما يلي:", opts: ["حصاد", "ثمار", "فواكه", "حبوب"], ans: "حصاد" },
-    { cat: "المفردة الشاذة", q: "اختر المفردة الشاذة فيما يلي:", opts: ["حصى", "رمال", "تراب", "جبل"], ans: "جبل" },
-    { cat: "المفردة الشاذة", q: "اختر المفردة الشاذة فيما يلي:", opts: ["إفك", "اتهام", "زور", "اعتقاد"], ans: "اعتقاد" },
-    { cat: "المفردة الشاذة", q: "اختر المفردة الشاذة فيما يلي:", opts: ["حرير", "طاقية", "عمامة", "ثوب"], ans: "حرير" },
-
-    // --- 5. الارتباط والاختلاف (إضافة جديدة للنموذج 11) ---
-    { cat: "الارتباط والاختلاف", q: "ما الكلمة التي ترتبط بكلمة (نحلة) ارتباطاً وثيقاً؟", opts: ["خلية", "طيران", "حشرة", "غابة"], ans: "خلية" },
-    { cat: "الارتباط والاختلاف", q: "الكلمة التي تختلف في سياق الارتباط عن البقية هي:", opts: ["الأسد", "النمر", "الذئب", "الغزال"], ans: "الغزال" },
-
-    // --- 6. استيعاب المقروء ---
-    { 
-        cat: "استيعاب المقروء", 
-        passage: "المواد الدراسية ليست فقط تلقين الطفل للمعلومات، بل تعطي طرقًا لتعود الطفل على حل المشكلات. ويجب أن تكون المواد الدراسية وسيلة وليست غاية. يكون منهج التفكير العلمي أساساً في حل المشكلات وطريقة في الحياة وأساساً في تقويم التلاميذ.",
-        q: "أنسب عنوان للنص هو:", 
-        opts: ["المواد الدراسية", "المعلومات والتفكير العلمي", "حل المشكلات", "أساليب التعليم"], 
-        ans: "المواد الدراسية" 
-    },
-    { 
-        cat: "استيعاب المقروء", 
-        passage: "المواد الدراسية ليست فقط تلقين الطفل للمعلومات، بل تعطي طرقًا لتعود الطفل على حل المشكلات. ويجب أن تكون المواد الدراسية وسيلة وليست غاية. يكون منهج التفكير العلمي أساساً في حل المشكلات وطريقة في الحياة وأساساً في تقويم التلاميذ.",
-        q: "المشكلة التي تواجه الطلاب حسب ما ورد في النص:", 
-        opts: ["المنهج والمعلومة", "حل المشكلات", "التقويم والمعرفة", "المواد الدراسية"], 
-        ans: "المواد الدراسية" 
-    },
-    { 
-        cat: "استيعاب المقروء", 
-        passage: "المواد الدراسية ليست فقط تلقين الطفل للمعلومات، بل تعطي طرقًا لتعود الطفل على حل المشكلات. ويجب أن تكون المواد الدراسية وسيلة وليست غاية. يكون منهج التفكير العلمي أساساً في حل المشكلات وطريقة في الحياة وأساساً في تقويم التلاميذ.",
-        q: "أساليب التعليم لابد أن تكون قائمة على:", 
-        opts: ["التقييم وحل المشكلات", "التلقين والفهم", "التلقين والحفظ", "العلم والمعرفة"], 
-        ans: "التقييم وحل المشكلات" 
-    },
-    { 
-        cat: "استيعاب المقروء", 
-        passage: "المواد الدراسية ليست فقط تلقين الطفل للمعلومات، بل تعطي طرقًا لتعود الطفل على حل المشكلات. ويجب أن تكون المواد الدراسية وسيلة وليست غاية. يكون منهج التفكير العلمي أساساً في حل المشكلات وطريقة في الحياة وأساساً في تقويم التلاميذ.",
-        q: "أي الآتي يعتمد عليه في تقويم المشكلات:", 
-        opts: ["التفكير المنهجي (العلمي)", "حل المشكلات", "المواد الدراسية", "الكتب"], 
-        ans: "التفكير المنهجي (العلمي)" 
-    }
-];
-
-    let currentIdx = 0, userScore = 0, timer, sName, sClass;
-
-    async function secureStart() {
-        const nameInput = document.getElementById('studentName').value.trim();
-        const classInput = document.getElementById('studentClass').value;
-        if(nameInput.split(' ').length < 3) return alert("الاسم الثلاثي مطلوب.");
-        if(!classInput) return alert("اختر الفصل.");
-
-        document.getElementById('start-btn').disabled = true;
-        document.getElementById('checking').classList.remove('hidden');
-
-        const snapshot = await db.collection("student_results")
-                        .where("deviceID", "==", deviceID)
-                        .where("model_id", "==", currentModelId)
-                        .get();
-
-        if(!snapshot.empty) {
-            const oldData = snapshot.docs[0].data();
-            const date = oldData.time ? oldData.time.toDate().toLocaleString('ar-SA') : 'تاريخ سابق';
-            document.getElementById('start-page').classList.add('hidden');
-            document.getElementById('lock-screen').classList.remove('hidden');
-            document.getElementById('prev-student-details').innerHTML = 
-                `الطالب: ${oldData.name} <br> الفصل: ${oldData.student_class} <br> التاريخ: ${date}`;
-            return;
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            showQuestion(currentIdx);
         }
-
-        sName = nameInput; sClass = classInput;
-        document.getElementById('start-page').classList.add('hidden');
-        document.getElementById('quiz-page').classList.remove('hidden');
-        loadQuestion();
     }
 
-    function loadQuestion() {
-        if(currentIdx >= quizData.length) return finish();
-        const data = quizData[currentIdx];
-        document.getElementById('q-counter').innerText = `السؤال ${currentIdx+1} من ${quizData.length}`;
-        const rc = document.getElementById('reading-container');
-        if(data.passage) { rc.innerText = data.passage; rc.classList.remove('hidden'); }
-        else { rc.classList.add('hidden'); }
-        document.getElementById('question-text').innerText = data.q;
-        document.getElementById('next-btn').classList.add('hidden');
-        const box = document.getElementById('options-area'); box.innerHTML = '';
-        [...data.opts].sort(() => Math.random()-0.5).forEach(o => {
-            const d = document.createElement('div'); d.className = 'opt'; d.innerText = o;
-            d.onclick = () => {
-                clearInterval(timer);
-                if(o === data.ans) userScore++;
-                document.querySelectorAll('.opt').forEach(el => {
-                    el.onclick = null;
-                    if(el.innerText === data.ans) el.classList.add('correct');
-                    else if(el.innerText === o) el.classList.add('wrong');
-                });
-                document.getElementById('next-btn').classList.remove('hidden');
-            };
-            box.appendChild(d);
+    // حساب درجة كل مهارة بشكل مستقل للوحة النتائج
+    function calculateSkillScore(skillType) {
+        const skillQuestions = questions.filter(q => q.type === skillType);
+        if (skillQuestions.length === 0) return 100; // قيمة افتراضية إذا لم يوجد أسئلة لهذا النوع
+        
+        let correctCount = 0;
+        questions.forEach((q, index) => {
+            if (q.type === skillType && userAnswers[index] === q.correct) {
+                correctCount++;
+            }
         });
-        startTimer();
+        return Math.round((correctCount / skillQuestions.length) * 100);
     }
 
-    function startTimer() {
-        let s = 45; document.getElementById('timer').innerText = s;
-        clearInterval(timer);
-        timer = setInterval(() => {
-            s--; document.getElementById('timer').innerText = s;
-            if(s<=0) { clearInterval(timer); nextQuestion(); }
-        }, 1000);
-    }
+    async function submitResults() {
+        if (!confirm("هل تريد إنهاء الاختبار وإرسال النتائج؟")) return;
 
-    function nextQuestion() { currentIdx++; loadQuestion(); }
-
-    async function finish() {
-        document.getElementById('quiz-page').classList.add('hidden');
-        document.getElementById('result-page').classList.remove('hidden');
-        document.getElementById('score-text').innerText = `${userScore} / ${quizData.length}`;
-        await db.collection("student_results").add({
-            name: sName, student_class: sClass, score: userScore, total: quizData.length,
-            model_id: currentModelId, deviceID: deviceID, time: firebase.firestore.FieldValue.serverTimestamp()
+        let totalScore = 0;
+        questions.forEach((q, index) => {
+            if (userAnswers[index] === q.correct) totalScore++;
         });
+
+        const finalResults = {
+            name: studentData.name,
+            email: studentData.email,
+            score: totalScore,
+            total: questions.length,
+            model_id: "6",
+            time: firebase.firestore.FieldValue.serverTimestamp(),
+            // هذه البيانات ستفهمها لوحة النتائج الذكية فوراً[cite: 2, 3]
+            sections: {
+                tan: calculateSkillScore("tan"), // تناظر
+                ekm: calculateSkillScore("ekm"), // إكمال
+                syq: calculateSkillScore("syq"), // سياقي
+                st:  calculateSkillScore("st"),  // استيعاب
+                mfr: calculateSkillScore("mfr"), // شاذة
+                art: calculateSkillScore("art"), // ارتباط
+                ikh: calculateSkillScore("ikh")  // اختلاف
+            }
+        };
+
+        try {
+            await db.collection("student_results").add(finalResults);
+            alert("تم إرسال نتيجتك بنجاح!");
+            location.reload();
+        } catch (e) { alert("حدث خطأ أثناء حفظ النتيجة"); }
     }
 </script>
+
 </body>
 </html>
