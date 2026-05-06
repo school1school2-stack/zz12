@@ -3,55 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي القدرات اللفظي - نموذج (12) - أ/ عبدالعزيز الفيفي</title>
+    <title>محاكي القدرات اللفظي - أ/ عبدالعزيز الفيفي</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root { 
-            --maroon: #800000; --gold: #d4af37; --bg: #fdfaf1; --white: #ffffff; 
-            --correct: #2e7d32; --wrong: #c62828; --matte-red: #B22222; 
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); 
-            display: flex; justify-content: center; padding: 20px; margin: 0; user-select: none; 
-        }
-        .quiz-card { 
-            background: var(--white); width: 100%; max-width: 900px; border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid var(--maroon); 
-            padding: 30px; position: relative; 
-        }
+        :root { --maroon: #800000; --gold: #d4af37; --bg: #fdfaf1; --white: #ffffff; --correct: #2e7d32; --wrong: #c62828; --matte-red: #B22222; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; user-select: none; }
+        .quiz-card { background: var(--white); width: 100%; max-width: 900px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid var(--maroon); padding: 30px; position: relative; }
         .header { text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
         .header h3, .header h4 { color: var(--matte-red); margin: 5px 0; }
-        input, select { 
-            width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; 
-            font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; 
-            margin-left: auto; margin-right: auto; 
-        }
-        .nav-bar { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #f4f4f4; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; 
-        }
+        input, select { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; text-align: center; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #f4f4f4; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; }
         .q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 25px; line-height: 1.8; color: #222; }
-        .reading-box { 
-            background: #fff9e6; border: 1.5px solid #f0e68c; padding: 20px; 
-            border-radius: 12px; margin-bottom: 20px; line-height: 1.8; font-size: 1.1rem; text-align: justify; 
-        }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .opt { 
-            padding: 18px; border: 2px solid #ececec; border-radius: 12px; 
-            cursor: pointer; transition: 0.2s; text-align: center; font-size: 1.2rem; 
-            background: #fff; font-weight: 600; 
-        }
+        .opt { padding: 18px; border: 2px solid #ececec; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.2rem; background: #fff; font-weight: 600; }
         .opt:hover { border-color: var(--gold); background: #fffcf0; }
         .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
         .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
-        .btn { 
-            background: var(--maroon); color: var(--gold); padding: 14px 50px; 
-            border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; 
-        }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn { background: var(--maroon); color: var(--gold); padding: 14px 50px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
         .hidden { display: none !important; }
-        #lock-screen { text-align: center; padding: 50px 20px; color: var(--wrong); }
+        #lock-screen { text-align: center; padding: 40px 20px; border: 2px dashed var(--wrong); border-radius: 15px; background: #fff5f5; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -63,34 +34,29 @@
         <h2>محاكي القدرات اللفظي - نموذج (12)</h2>
     </div>
 
-    <!-- شاشة الحظر في حال التكرار -->
+    <!-- شاشة الحظر -->
     <div id="lock-screen" class="hidden">
-        <h1 style="font-size: 4rem;">⚠️</h1>
-        <h2>تنبيه: محاولة مكررة</h2>
-        <p id="lock-msg">عذراً، لا يمكن إعادة الاختبار. سياسة النزاهة تمنع المحاولات المتعددة.</p>
+        <h1 style="font-size: 3rem; margin: 0;">🚫</h1>
+        <h2 style="color: var(--wrong);">محاولة غير مصرح بها!</h2>
+        <div id="lock-info" style="font-size: 1.2rem; line-height: 2; color: #444;">
+            <p id="lock-message"></p>
+        </div>
     </div>
 
-    <!-- شاشة البداية -->
+    <!-- صفحة الدخول -->
     <div id="start-page" style="text-align: center;">
-        <input type="text" id="studentName" placeholder="الاسم الثلاثي">
-        <select id="stageSelect" onchange="updateClasses()">
-            <option value="">-- المرحلة الدراسية --</option>
-            <option value="أول ثانوي">أول ثانوي</option>
-            <option value="ثاني ثانوي">ثاني ثانوي</option>
-            <option value="ثالث ثانوي">ثالث ثانوي</option>
-        </select>
-        <select id="studentClass" class="hidden"></select>
-        <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار الآن 🚀</button>
-        <p id="checking" class="hidden" style="color: var(--maroon); font-weight: bold;">جاري التحقق من أمان الجهاز وصلاحية الدخول سحابياً...</p>
+        <p style="color: var(--maroon); font-weight: bold;">يرجى إدخال بريدك الوزاري المسجل للدخول</p>
+        <input type="email" id="studentEmail" placeholder="البريد الإلكتروني الوزاري (sxxxxxxx@rb.moe.gov.sa)">
+        <button id="start-btn" class="btn" onclick="verifyAndStart()">التحقق والدخول للاختبار 🚀</button>
+        <p id="status-msg" style="margin-top: 15px; font-weight: bold; color: var(--gold);"></p>
     </div>
 
-    <!-- شاشة الأسئلة -->
+    <!-- صفحة الاختبار -->
     <div id="quiz-page" class="hidden">
         <div class="nav-bar">
             <div id="q-counter" style="font-weight: bold;"></div>
             <div id="timer" style="font-weight: 900; color: var(--maroon); font-size: 1.4rem;">45</div>
         </div>
-        <div id="reading-container" class="reading-box hidden"></div>
         <div id="question-text" class="q-text"></div>
         <div id="options-area" class="options-grid"></div>
         <div style="text-align: center; margin-top: 25px;">
@@ -98,11 +64,10 @@
         </div>
     </div>
 
-    <!-- شاشة النتيجة -->
+    <!-- صفحة النتيجة -->
     <div id="result-page" class="hidden" style="text-align: center;">
         <h2 style="color: var(--maroon);">تم الانتهاء! نتيجتك هي:</h2>
         <div style="font-size: 4rem; font-weight: bold; margin: 20px 0; color: var(--gold);" id="score-text"></div>
-        <p>✨ أ / عبد العزيز الفيفي - ثانوية الأمير عبدالمجيد 🎓</p>
     </div>
 </div>
 
@@ -119,26 +84,78 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // بصمة الجهاز المتقدمة
-    function generateFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = "top"; ctx.font = "16px 'Arial'";
-        ctx.fillText("Al-Faifi-Secure-V6", 2, 2);
-        return btoa(canvas.toDataURL()).substring(160, 210);
-    }
-    const deviceID = generateFingerprint();
+    let sName, sEmail, sClass = "1 / 6"; // الفصل ثابت لجميع الـ 181 طالباً
 
-   const quizData = [
-    // --- التناظر اللفظي (6 أسئلة) ---
-    { cat: "التناظر اللفظي", q: "غزال : رشا", opts: ["أسد : شبل", "خيل : صهيل", "جمل : وبر", "صقر : مخلب"], ans: "أسد : شبل", type: "tan" },
+    // --- دالة التحقق الذكي قبل البدء ---
+    async function verifyAndStart() {
+        const emailInput = document.getElementById('studentEmail').value.trim().toLowerCase();
+        const status = document.getElementById('status-msg');
+        const btn = document.getElementById('start-btn');
+
+        if(!emailInput.includes('@')) return alert("يرجى إدخال بريد إلكتروني صحيح.");
+
+        btn.disabled = true;
+        status.innerText = "جاري التحقق من بياناتك... ⏳";
+
+        try {
+            // 1. التحقق هل الإيميل موجود في قائمة الـ 181 المسموح لهم؟
+            const allowedDoc = await db.collection("allowed_students").doc(emailInput).get();
+            
+            if (!allowedDoc.exists) {
+                status.innerText = "";
+                showLock("عذراً، هذا الإيميل غير مسجل في قائمة الطلاب المعتمدة لهذا الاختبار.");
+                return;
+            }
+
+            const studentData = allowedDoc.data();
+            sName = studentData.name;
+            sEmail = emailInput;
+
+            // 2. التحقق هل اختبر مسبقاً؟
+            const resultCheck = await db.collection("student_results")
+                                    .where("email", "==", sEmail)
+                                    .where("model_id", "==", currentModelId)
+                                    .get();
+
+            if (!resultCheck.empty) {
+                status.innerText = "";
+                showLock(`يا ${sName}، لقد قمت بأداء هذا الاختبار مسبقاً. لا يسمح بإعادة المحاولة.`);
+                return;
+            }
+
+            // إذا نجح التحقق
+            alert(`أهلاً بك يا ${sName}. بالتوفيق في اختبارك.`);
+            document.getElementById('start-page').classList.add('hidden');
+            document.getElementById('quiz-page').classList.remove('hidden');
+            loadQuestion();
+
+        } catch (error) {
+            console.error(error);
+            alert("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
+            btn.disabled = false;
+        }
+    }
+
+    function showLock(msg) {
+        document.getElementById('start-page').classList.add('hidden');
+        document.getElementById('lock-screen').classList.remove('hidden');
+        document.getElementById('lock-message').innerText = msg;
+    }
+
+   // مصفوفة الأسئلة - نموذج 40 سؤال (تحديث نصوص استيعاب المقروء)
+// إعداد: أستاذ عبد العزيز الفيفي 🎓 (أبو نواف)
+// لطلاب ثانوية الأمير عبدالمجيد بالمدينة المنورة
+
+const quizData = [
+    // --- 1. التناظر اللفظي (6 أسئلة) ---
     { cat: "التناظر اللفظي", q: "رئة : تنفس", opts: ["قلب : ضخ", "عين : ضياء", "أذن : رأس", "معدة : جوع"], ans: "قلب : ضخ", type: "tan" },
     { cat: "التناظر اللفظي", q: "منزل : جدار", opts: ["شجرة : غصن", "سيارة : طريق", "كتاب : قلم", "نهر : ماء"], ans: "شجرة : غصن", type: "tan" },
+    { cat: "التناظر اللفظي", q: "غزال : رشا", opts: ["أسد : شبل", "خيل : صهيل", "جمل : وبر", "صقر : مخلب"], ans: "أسد : شبل", type: "tan" },
     { cat: "التناظر اللفظي", q: "سماء : نجوم", opts: ["بحر : سمك", "فلاة : صحراء", "ليل : ظلام", "حديقة : سور"], ans: "بحر : سمك", type: "tan" },
     { cat: "التناظر اللفظي", q: "إهمال : فشل", opts: ["جهد : نجاح", "قراءة : كتاب", "نوم : ليل", "سرعة : حادث"], ans: "جهد : نجاح", type: "tan" },
     { cat: "التناظر اللفظي", q: "سفينة : مرساة", opts: ["سيارة : كوابح", "طائرة : جناح", "قطار : سكة", "دراجة : طريق"], ans: "سيارة : كوابح", type: "tan" },
 
-    // --- إكمال الجمل (6 أسئلة) ---
+    // --- 2. إكمال الجمل (6 أسئلة) ---
     { cat: "إكمال الجمل", q: "من زاد حياؤه زاد ...... ، ومن قل حياؤه قل ...... .", opts: ["سروره - أدبه", "أدبه - وقاره", "نبلُه - فضله", "تواضعه - علمه"], ans: "نبلُه - فضله", type: "ekm" },
     { cat: "إكمال الجمل", q: "القناعة لا تمنع ...... ، ولكنها تمنع ...... .", opts: ["الرزق - الطمع", "الفقر - الغنى", "الجهد - التعب", "المال - الفرح"], ans: "الرزق - الطمع", type: "ekm" },
     { cat: "إكمال الجمل", q: "إن طول ...... في المرآة قد يجعلك تنسى ...... .", opts: ["النظر - عيوبك", "التأمل - حقيقتك", "الوقوف - جمالك", "التفكير - وقتك"], ans: "النظر - عيوبك", type: "ekm" },
@@ -146,16 +163,16 @@
     { cat: "إكمال الجمل", q: "يعد الوعي ...... من أهم المتطلبات في عصرنا لتجنب ...... المعلوماتية.", opts: ["التقني - الجرائم", "الصحي - العدوى", "البيئي - التلوث", "الفكري - الانحراف"], ans: "التقني - الجرائم", type: "ekm" },
     { cat: "إكمال الجمل", q: "الحكمة هي أن تضع ...... في مكانها ...... .", opts: ["الأشياء - الصحيح", "الكلمات - المناسب", "العواطف - القوي", "الخطوات - الواسع"], ans: "الأشياء - الصحيح", type: "ekm" },
 
-    // --- الخطأ السياقي (7 أسئلة) ---
+    // --- 3. الخطأ السياقي (7 أسئلة) ---
     { cat: "الخطأ السياقي", q: "الحياة عبء ثقيل على بعض الناس، وبعض الناس عبء خفيف على الحياة.", opts: ["ثقيل", "خفيف", "الحياة", "الناس"], ans: "خفيف", type: "syq" },
     { cat: "الخطأ السياقي", q: "من زاد حبه لنفسه زاد كره الناس له، وقلّ حبه لذاته.", opts: ["حبه", "كره", "له", "لذاته"], ans: "لذاته", type: "syq" },
     { cat: "الخطأ السياقي", q: "العظمة الحقيقية هي أن تكون عظيماً في تواضعك، وصغيراً في كبريائك.", opts: ["عظيماً", "تواضعك", "صغيراً", "كبريائك"], ans: "كبريائك", type: "syq" },
     { cat: "الخطأ السياقي", q: "صناعة الأعداء أسهل بكثير من صناعة الأصدقاء؛ لأن الهدم أشق من البناء.", opts: ["أسهل", "الأصدقاء", "الهدم", "أشق"], ans: "أشق", type: "syq" },
     { cat: "الخطأ السياقي", q: "المتفائل يرى فرصة في كل صعوبة، والمتشائم يرى صعوبة في كل منحة.", opts: ["يرى", "فرصة", "صعوبة", "منحة"], ans: "منحة", type: "syq" },
     { cat: "الخطأ السياقي", q: "أفضل وسيلة للتخلص من العدو هي أن تجعله حليفاً لك في السر.", opts: ["أفضل", "العدو", "حليفاً", "السر"], ans: "السر", type: "syq" },
-    { cat: "الخطأ السياقي", q: "لا تمشِ أمام الآخرين فقد لا يتبعونك، ولا تمشِ خلفهم فقد لا يقودونك.", opts: ["أمام", "خلفهم", "يقودونك", "يتبعونك"], ans: "أمام", type: "syq" },
+    { cat: "الخطأ السياقي", q: "الابتسامة كلمة طيبة بغير حروف، ووجه عابس يمنح التفاؤل.", opts: ["الابتسامة", "طيبة", "عابس", "التفاؤل"], ans: "التفاؤل", type: "syq" },
 
-    // --- المفردة الشاذة (7 أسئلة) ---
+    // --- 4. المفردة الشاذة (7 أسئلة) ---
     { cat: "المفردة الشاذة", q: "حدد المفردة الشاذة:", opts: ["أسد", "فهد", "نمر", "ذئب"], ans: "ذئب", type: "mfr" },
     { cat: "المفردة الشاذة", q: "حدد المفردة الشاذة:", opts: ["عمان", "بيروت", "المنامة", "الكويت"], ans: "بيروت", type: "mfr" },
     { cat: "المفردة الشاذة", q: "حدد المفردة الشاذة:", opts: ["سيف", "خنجر", "رمح", "درع"], ans: "درع", type: "mfr" },
@@ -164,16 +181,58 @@
     { cat: "المفردة الشاذة", q: "حدد المفردة الشاذة:", opts: ["مكة", "المدينة", "جدة", "القدس"], ans: "القدس", type: "mfr" },
     { cat: "المفردة الشاذة", q: "حدد المفردة الشاذة:", opts: ["كتاب", "مجلة", "قلم", "صحيفة"], ans: "قلم", type: "mfr" },
 
-    // --- استيعاب المقروء (7 أسئلة - نص تقني قصير) ---
-    { cat: "استيعاب المقروء", q: "(نص: الأمن السيبراني هو ممارسة حماية الأنظمة من الهجمات الرقمية). الهدف الأساسي منه هو:", opts: ["حماية البيانات", "سرعة الإنترنت", "شراء الأجهزة", "تصميم المواقع"], ans: "حماية البيانات", type: "st" },
-    { cat: "استيعاب المقروء", q: "تستهدف الهجمات الرقمية عادةً الوصول إلى المعلومات:", opts: ["الحساسة", "العامة", "القديمة", "الورقية"], ans: "الحساسة", type: "st" },
-    { cat: "استيعاب المقروء", q: "تعتمد قوة الحماية السيبرانية على وعي:", opts: ["المستخدم", "الشركة المصنعة", "المبرمج فقط", "الدولة"], ans: "المستخدم", type: "st" },
-    { cat: "استيعاب المقروء", q: "كلمة (ممارسة) في النص توحي بـ:", opts: ["الاستمرارية", "التوقف", "التجربة", "اللعب"], ans: "الاستمرارية", type: "st" },
-    { cat: "استيعاب المقروء", q: "العلاقة بين الأمن السيبراني والبيانات هي علاقة:", opts: ["تكامل", "تضاد", "سبب ونتيجة", "حماية ومحمي"], ans: "حماية ومحمي", type: "st" },
-    { cat: "استيعاب المقروء", q: "أنسب عنوان للنص هو:", opts: ["تعريف الأمن السيبراني", "مخاطر الإنترنت", "تطور الحواسيب", "طرق البرمجة"], ans: "تعريف الأمن السيبراني", type: "st" },
-    { cat: "استيعاب المقروء", q: "يفهم من النص أن التهديدات الرقمية هي تهديدات:", opts: ["مستمرة", "نادرة", "ضعيفة", "قديمة"], ans: "مستمرة", type: "st" },
+    // --- 5. استيعاب المقروء (7 أسئلة - نصوص متوسطة الطول) ---
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'يُعد الذكاء الاصطناعي ثورة في عالم التقنية، حيث يهدف إلى محاكاة القدرات الذهنية البشرية وأنماط عملها. وتتسابق الدول لامتلاك زمام هذه التقنية لدورها في تعزيز الاقتصاد وتحسين جودة الحياة الرقمية، ومع ذلك يبقى العنصر البشري هو المحرك الأساسي والموجه الأخلاقي لها'.\n\n الفكرة الرئيسية للنص هي:", 
+        opts: ["إلغاء دور البشر", "محاكاة العقل البشري", "أهمية الذكاء الاصطناعي", "تدهور جودة الحياة"], 
+        ans: "أهمية الذكاء الاصطناعي", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'تعتبر الموهبة هبة من الله، لكنها كالنبتة التي تحتاج إلى رعاية وتعهد مستمر. فالموهوب الذي لا يطور مهاراته بالتدريب والممارسة قد يفقد بريق موهبته مع مرور الزمن، بينما الصبر والمثابرة يصقلان هذه الموهبة ويحولانها إلى إبداع حقيقي يخدم المجتمع'.\n\n يُفهم من النص أن صقل الموهبة يحتاج إلى:", 
+        opts: ["الصبر والمثابرة", "المال الكثير", "العزلة التامة", "الحظ المفاجئ"], 
+        ans: "الصبر والمثابرة", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'الأمن السيبراني هو ممارسة تهدف لحماية الأنظمة والشبكات من الهجمات الرقمية. وتزداد أهميته مع تحول المجتمعات نحو الرقمنة الشاملة، حيث تصبح البيانات هي النفط الجديد. إن غياب الوعي لدى المستخدم يمثل الثغرة الأكبر التي ينفذ منها المخترقون مهما كانت قوة الأنظمة'.\n\n الثغرة الأكبر في نظام الأمن كما يراها الكاتب هي:", 
+        opts: ["قوة الأنظمة", "نقص البيانات", "غياب وعي المستخدم", "التحول الرقمي"], 
+        ans: "غياب وعي المستخدم", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'التنوع البيولوجي في الغابات الاستوائية يمثل رئة الأرض، حيث تسهم هذه الغابات في امتصاص الكربون وإطلاق الأكسجين. إن الزحف العمراني والاحتطاب الجائر يهددان هذا التوازن البيئي، مما يؤدي إلى تغير المناخ وارتفاع درجات حرارة الكوكب بشكل مطرد'.\n\n علاقة الزحف العمراني بتغير المناخ في النص هي علاقة:", 
+        opts: ["تضاد", "سبب ونتيجة", "تكامل", "تشابه"], 
+        ans: "سبب ونتيجة", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'اللغة العربية ليست مجرد وسيلة تواصل، بل هي وعاء للفكر والتراث. تمتاز لغة الضاد بقدرتها العالية على الاشتقاق والتعريب، مما جعلها تواكب التطورات العلمية عبر العصور. إن الحفاظ عليها مسؤولية مشتركة بين الأسرة والمدرسة والمجتمع'.\n\n تمتاز اللغة العربية كما ورد في النص بـ:", 
+        opts: ["سهولة التعلم", "الاشتقاق والتعريب", "الانتشار الجغرافي", "قلة الكلمات"], 
+        ans: "الاشتقاق والتعريب", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'التطوع ليس مجرد بذل للجهد دون مقابل، بل هو مدرسة لتعزيز القيم الإنسانية والانتماء الوطني. يكتسب المتطوع مهارات القيادة والعمل الجماعي، كما يساهم في سد ثغرات اجتماعية هامة. لذا تحرص الأنظمة التعليمية على غرس هذه القيمة في نفوس الطلاب'.\n\n يعود النفع من التطوع في النص على:", 
+        opts: ["المتطوع والمجتمع", "المتطوع فقط", "الجهات الرسمية", "المجتمع دون الفرد"], 
+        ans: "المتطوع والمجتمع", 
+        type: "st" 
+    },
+    { 
+        cat: "استيعاب المقروء", 
+        q: "نص: 'القراءة الواعية هي مفتاح العقل، فهي تتيح للقارئ التجول في عقول الآخرين والاستفادة من تجاربهم. لا تقاس القراءة بعدد الصفحات، بل بمقدار ما يتركه الكتاب من أثر في فكر القارئ وسلوكه وتوسيع مداركه الثقافية'.\n\n المقياس الحقيقي للقراءة في النص هو:", 
+        opts: ["عدد الصفحات", "سرعة القراءة", "الأثر في الفكر", "ثمن الكتاب"], 
+        ans: "الأثر في الفكر", 
+        type: "st" 
+    },
 
-    // --- الارتباط والاختلاف (7 أسئلة) ---
+    // --- 6. الارتباط والاختلاف (7 أسئلة) ---
     { cat: "الارتباط والاختلاف", q: "ما الكلمة التي ترتبط بكلمة (غابة):", opts: ["أشجار", "رمال", "شوارع", "مصانع"], ans: "أشجار", type: "ikh" },
     { cat: "الارتباط والاختلاف", q: "أي من الكلمات التالية تختلف في نوعها:", opts: ["طائرة", "سيارة", "سفينة", "قلم"], ans: "قلم", type: "ikh" },
     { cat: "الارتباط والاختلاف", q: "الارتباط الأقوى لـ (مدرسة) هو:", opts: ["تعليم", "لعب", "تجارة", "زراعة"], ans: "تعليم", type: "ikh" },
@@ -183,71 +242,15 @@
     { cat: "الارتباط والاختلاف", q: "العلاقة الرابطة بين (الأسد والنمر) هي:", opts: ["الافتراس", "الألفة", "السرعة", "الحجم"], ans: "الافتراس", type: "ikh" }
 ];
 
-    let currentIdx = 0, userScore = 0, timer, sName, sClass;
-
-    function updateClasses() {
-        const stage = document.getElementById('stageSelect').value;
-        const classSelect = document.getElementById('studentClass');
-        classSelect.innerHTML = '<option value="">-- اختر الفصل --</option>';
-        if (stage) {
-            classSelect.classList.remove('hidden');
-            for (let i = 1; i <= 6; i++) {
-                const opt = document.createElement('option');
-                opt.value = `${stage} - ${i}`;
-                opt.innerText = `فصل ${i}`;
-                classSelect.appendChild(opt);
-            }
-        }
-    }
-
-    async function secureStart() {
-        const nameInput = document.getElementById('studentName').value.trim();
-        const classInput = document.getElementById('studentClass').value;
-        if(nameInput.split(' ').length < 3) return alert("الاسم الثلاثي مطلوب.");
-        if(!classInput) return alert("اختر الفصل.");
-
-        document.getElementById('start-btn').disabled = true;
-        document.getElementById('checking').classList.remove('hidden');
-
-        try {
-            // التحقق السحابي المزدوج (الاسم والبصمة)
-            const deviceSnapshot = await db.collection("student_results")
-                .where("model_id", "==", currentModelId)
-                .where("deviceID", "==", deviceID).get();
-
-            const nameSnapshot = await db.collection("student_results")
-                .where("model_id", "==", currentModelId)
-                .where("name", "==", nameInput).get();
-
-            if(!deviceSnapshot.empty || !nameSnapshot.empty) {
-                document.getElementById('start-page').innerHTML = ""; // مسح كامل للواجهة لمنع التلاعب
-                document.getElementById('lock-screen').classList.remove('hidden');
-                if(!nameSnapshot.empty) document.getElementById('lock-msg').innerText = "هذا الاسم قام بأداء الاختبار مسبقاً.";
-                return;
-            }
-
-            sName = nameInput; sClass = classInput;
-            document.getElementById('start-page').classList.add('hidden');
-            document.getElementById('quiz-page').classList.remove('hidden');
-            loadQuestion();
-
-        } catch (e) {
-            alert("حدث خطأ في الاتصال، حاول مرة أخرى.");
-            document.getElementById('start-btn').disabled = false;
-        }
-    }
+    let currentIdx = 0, userScore = 0, timer;
 
     function loadQuestion() {
         if(currentIdx >= quizData.length) return finish();
         const data = quizData[currentIdx];
         document.getElementById('q-counter').innerText = `السؤال ${currentIdx+1} من ${quizData.length}`;
-        const rc = document.getElementById('reading-container');
-        if(data.passage) { rc.innerText = data.passage; rc.classList.remove('hidden'); }
-        else { rc.classList.add('hidden'); }
         document.getElementById('question-text').innerText = data.q;
         document.getElementById('next-btn').classList.add('hidden');
         const box = document.getElementById('options-area'); box.innerHTML = '';
-        
         [...data.opts].sort(() => Math.random()-0.5).forEach(o => {
             const d = document.createElement('div'); d.className = 'opt'; d.innerText = o;
             d.onclick = () => {
@@ -282,9 +285,13 @@
         document.getElementById('score-text').innerText = `${userScore} / ${quizData.length}`;
         
         await db.collection("student_results").add({
-            name: sName, student_class: sClass, score: userScore, 
-            total: quizData.length, model_id: currentModelId, 
-            deviceID: deviceID, time: firebase.firestore.FieldValue.serverTimestamp()
+            name: sName, 
+            email: sEmail,
+            student_class: sClass, 
+            score: userScore, 
+            total: quizData.length,
+            model_id: currentModelId, 
+            time: firebase.firestore.FieldValue.serverTimestamp()
         });
     }
 </script>
